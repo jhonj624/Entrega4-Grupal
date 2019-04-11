@@ -1,0 +1,21 @@
+{{>header}} 
+
+
+<div class="container px-5">
+    <form action="/editarPerfiles" method="post">
+        <div class="form-row px-5 my-5">
+            <div class="form-group col-md-4 mt-5">
+                Identificación del usuario que desea editar:
+                <input type="number" class="form-control" size="50" maxlength="50" placeholder="Documento de Identidad" name="id" required>
+            </div>
+            <div class="form-group col-md-4 mt-4 ">
+                <button class="btn btn-dark mt-5 mx-5 btn-sm"> Enviar </button>
+            </div>
+    </form>
+</div>
+
+    {{{mensaje}}}
+    {{{Formulario}}}
+   
+
+    {{>footer}}

@@ -1,0 +1,32 @@
+{{>header}}
+
+<div class="row mr-0 justify-content-md-center align-items-center">
+    <div class="col-sm-12 p-4">
+        <p style="font-size: 16pt">Seleccione el docente para el curso: </p>
+    </div>
+
+</div>
+
+{{{mensaje}}}
+
+{{#if bandera}}
+<form action="/docenteAsignado" method="post">
+    
+    <div class="form-row px-4">
+        <div class="form-group col-md-6">
+            Curso:
+            <input class="form-control" name="nombreCurso" value= "{{{Nombre_Curso}}}">
+            </input>
+            Docente:
+            <select class="form-control" name="nombreDocente" required>
+                {{{mostrarDocentes  docentes}}}
+            </select>
+        </div>
+    </div>
+    <div class="form-row px-4">
+        <button class="btn btn-primary"> Realizar la asignación </button>
+    </div>
+</form>
+{{/if}}
+
+{{>footer}}

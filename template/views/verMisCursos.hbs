@@ -1,0 +1,19 @@
+{{>header}}
+
+<div class="row mr-0 justify-content-md-center align-items-center">
+  <div class="col-sm-12 p-4">
+
+    <h2> Bienvenido a sus cursos de educación continua </h2>
+    <p>Gestione sus cursos inscritos</p>
+  </div>
+</div>
+
+{{#if bandera}}
+  {{{texto}}}
+  {{{mostrar_mis_cursos informacion}}}
+{{else}}
+  {{{texto}}}
+{{/if}}
+
+
+{{>footer}}
