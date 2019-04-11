@@ -35,6 +35,9 @@ app.use((req, res, next) => {
     } else if (req.session.rol === 'aspirante') {
         res.locals.sesion2 = true;
         res.locals.usuario = req.session.usuario
+    } else if (req.session.rol === 'docente') {
+        res.locals.sesion3 = true;
+        res.locals.usuario = req.session.usuario
     }
     next()
 })
