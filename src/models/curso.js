@@ -45,6 +45,10 @@ const cursoSchema = new Schema({
     fechaInicio: {
         type: Date,
         required: false
+    },
+
+    programa: {
+        type: Buffer
     }
 });
 
