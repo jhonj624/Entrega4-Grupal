@@ -1,80 +1,79 @@
-const express = require('express');
+const express = require("express");
 const app = express();
-const path = require('path');
-const hbs = require('hbs');
-const Aspirante = require('./../models/aspirante')
-const Curso = require('./../models/curso')
-const Inscrito = require('./../models/inscrito')
-const bcrypt = require('bcrypt');
-const session = require('express-session')
+const path = require("path");
+const hbs = require("hbs");
+const Aspirante = require("./../models/aspirante");
+const Curso = require("./../models/curso");
+const Inscrito = require("./../models/inscrito");
+const bcrypt = require("bcrypt");
+const session = require("express-session");
 
-const dirViews = path.join(__dirname, '../../template/views');
-const dirPartials = path.join(__dirname, '../../template/partials');
+const dirViews = path.join(__dirname, "../../template/views");
+const dirPartials = path.join(__dirname, "../../template/partials");
 
-require('./../helpers/helpers')
+require("./../helpers/helpers");
 
 //hbs
-app.set('view engine', 'hbs');
-app.set('views', dirViews);
+app.set("view engine", "hbs");
+app.set("views", dirViews);
 hbs.registerPartials(dirPartials);
 
-app.use(session({
-    secret: 'keyboard cat',
-    resave: false,
-    saveUninitialized: true,
-    //cookie: { secure: true }
-}))
+app.use(
+    session({
+        secret: "keyboard cat",
+        resave: false,
+        saveUninitialized: true
+            //cookie: { secure: true }
+    })
+);
 
+app.set("view engine", "hbs");
 
-app.set('view engine', 'hbs');
+app.get("/", (req, res) => res.render("index", { nombre: req.session.nombre }));
 
-app.get('/', (req, res) => res.render('index', { nombre: req.session.nombre }));
+app.get("/registro", (req, res) =>
+    res.render("registro", { nombre: req.session.nombre, rol: req.session.rol })
+);
 
-app.get('/registro', (req, res) => res.render('registro', { nombre: req.session.nombre, rol: req.session.rol, }));
-
-app.post('/registrar', (req, res) => {
-    console.log(req.body)
+app.post("/registrar", (req, res) => {
     let aspirante = new Aspirante({
         nombre: req.body.nombre,
         documento: req.body.id,
         email: req.body.email,
         telefono: req.body.tel
-    })
+    });
 
     aspirante.save((err, result) => {
         if (err) {
-            return res.render('registropost', {
+            return res.render("registropost", {
                 mensaje: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> ${err} </h4><hr></div>`,
                 nombre: req.session.nombre,
-                rol: req.session.rol,
-            })
+                rol: req.session.rol
+            });
         }
-        res.render('registropost', {
+        res.render("registropost", {
             mensaje: `<div class = 'alert-success'\
             role = 'alert'> <h4 class="alert-heading"> <br> Registro realizado con éxito </h4><hr></div>`,
             nombre: req.session.nombre,
-            rol: req.session.rol,
+            rol: req.session.rol
         });
-    })
-
+    });
 });
 
-
-app.post('/formularioCrear', (req, res) => {
+app.post("/formularioCrear", (req, res) => {
     Curso.find({}).exec((err, respuesta) => {
         if (err) {
-            texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`
+            texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`;
         }
-        res.render('formularioCrear', {
+        res.render("formularioCrear", {
             listaCursos: respuesta,
             nombre: req.session.nombre,
-            rol: req.session.rol,
-        })
-    })
+            rol: req.session.rol
+        });
+    });
+});
 
-})
-
-app.post('/crear', (req, res) => {
+app.post("/crear", (req, res) => {
     let curso = new Curso({
         nombre: req.body.nombre,
         id: req.body.id,
@@ -82,352 +81,352 @@ app.post('/crear', (req, res) => {
         descripcion: req.body.descripcion,
         modalidad: req.body.modalidad,
         intensidad: req.body.intensidad
-    })
+    });
 
     curso.save((err, result) => {
         if (err) {
-            texto = `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> ${err} </h4><hr></div>`
+            texto = `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> ${err} </h4><hr></div>`;
             return Curso.find({}).exec((err, respuesta) => {
                 if (err) {
-                    texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`
+                    texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`;
                 }
-                res.render('crear', {
+                res.render("crear", {
                     texto,
                     listaCursos: respuesta,
                     nombre: req.session.nombre,
-                    rol: req.session.rol,
-                })
-            })
+                    rol: req.session.rol
+                });
+            });
         }
         texto = `<div class = 'alert-success'\
-        role = 'alert'> <h4 class="alert-heading"> <br> El curso fue creado con éxito </h4><hr></div>`
+        role = 'alert'> <h4 class="alert-heading"> <br> El curso fue creado con éxito </h4><hr></div>`;
         Curso.find({}).exec((err, respuesta) => {
             if (err) {
-                texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`
+                texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`;
             }
-            res.render('crear', {
+            res.render("crear", {
                 texto,
                 listaCursos: respuesta,
                 nombre: req.session.nombre,
-                rol: req.session.rol,
-
-            })
-        })
-
-    })
-
-});
-
-app.post('/ver', (req, res) => {
-    Curso.find({}).exec((err, respuesta) => {
-        if (err) {
-            texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`
-        }
-        res.render('ver', {
-            listaCursos: respuesta,
-            nombre: req.session.nombre,
-            rol: req.session.rol,
-
-        })
-    })
-});
-
-app.post('/inscribir', (req, res) => {
-    Curso.find({ estado: 'disponible' }).exec((err, respuesta) => {
-        if (err) {
-            texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`
-        }
-        res.render('inscribir', {
-            listaCursos: respuesta,
-            nombre: req.session.nombre,
-            rol: req.session.rol,
-        })
-    })
-});
-
-app.post('/inscritos', (req, res) => {
-
-    Aspirante.findOne({ documento: req.session.usuario }, (err, usuario) => {
-
-        if (err) {
-            return console.log(err)
-        }
-        Inscrito.find({ documento: usuario.documento, nombreCurso: req.body.nombreCurso }, (err, resultados) => {
-
-            if (resultados.length == 0) {
-                inscrito = new Inscrito({
-                    nombre: usuario.nombre,
-                    documento: usuario.documento,
-                    email: usuario.email,
-                    telefono: usuario.telefono,
-                    nombreCurso: req.body.nombreCurso,
-                });
-                inscrito.save((err, result) => {
-                    if (err) {
-                        return console.log(err);
-                    }
-                    res.render('inscritos', {
-                        bandera: true,
-                        texto: `<div class = 'alert-success px-4'
-                        role = 'alert'> <h4 class="alert-heading"> <br> Inscripción Exitosa </h4><hr></div>`,
-                        est: {
-                            documento: usuario.documento,
-                            nombre: usuario.nombre,
-                            nombreCurso: req.body.nombreCurso
-                        },
-                        nombre: req.session.nombre,
-                        rol: req.session.rol,
-                    });
-                })
-            } else {
-                texto = `<div class = 'alert alert-danger px-4'
-        role = 'alert'><h4 class="alert-heading"> <br> Ya se encuentra inscrito al curso </h4><hr></div>`
-
-                res.render('inscritos', {
-                    bandera: false,
-                    texto,
-                    nombre: req.session.nombre,
-                    rol: req.session.rol,
-                });
-            }
-        })
+                rol: req.session.rol
+            });
+        });
     });
 });
 
-app.post('/verMisCursos', (req, res) => {
+app.post("/ver", (req, res) => {
+    Curso.find({}).exec((err, respuesta) => {
+        if (err) {
+            texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`;
+        }
+        res.render("ver", {
+            listaCursos: respuesta,
+            nombre: req.session.nombre,
+            rol: req.session.rol
+        });
+    });
+});
+
+app.post("/inscribir", (req, res) => {
+    Curso.find({ estado: "disponible" }).exec((err, respuesta) => {
+        if (err) {
+            texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`;
+        }
+        res.render("inscribir", {
+            listaCursos: respuesta,
+            nombre: req.session.nombre,
+            rol: req.session.rol
+        });
+    });
+});
+
+app.post("/inscritos", (req, res) => {
+    Aspirante.findOne({ documento: req.session.usuario }, (err, usuario) => {
+        if (err) {
+            return console.log(err);
+        }
+        Inscrito.find({ documento: usuario.documento, nombreCurso: req.body.nombreCurso },
+            (err, resultados) => {
+                if (resultados.length == 0) {
+                    inscrito = new Inscrito({
+                        nombre: usuario.nombre,
+                        documento: usuario.documento,
+                        email: usuario.email,
+                        telefono: usuario.telefono,
+                        nombreCurso: req.body.nombreCurso
+                    });
+                    inscrito.save((err, result) => {
+                        if (err) {
+                            return console.log(err);
+                        }
+                        res.render("inscritos", {
+                            bandera: true,
+                            texto: `<div class = 'alert-success px-4'
+                        role = 'alert'> <h4 class="alert-heading"> <br> Inscripción Exitosa </h4><hr></div>`,
+                            est: {
+                                documento: usuario.documento,
+                                nombre: usuario.nombre,
+                                nombreCurso: req.body.nombreCurso
+                            },
+                            nombre: req.session.nombre,
+                            rol: req.session.rol
+                        });
+                    });
+                } else {
+                    texto = `<div class = 'alert alert-danger px-4'
+        role = 'alert'><h4 class="alert-heading"> <br> Ya se encuentra inscrito al curso </h4><hr></div>`;
+
+                    res.render("inscritos", {
+                        bandera: false,
+                        texto,
+                        nombre: req.session.nombre,
+                        rol: req.session.rol
+                    });
+                }
+            }
+        );
+    });
+});
+
+app.post("/verMisCursos", (req, res) => {
     cambia = req.body.curso_nombre;
 
     if (!!cambia) {
-        Inscrito.findOneAndDelete({ nombreCurso: cambia, documento: req.session.usuario }, (err, resultados) => {
-            if (err) {
-                return console.log(err)
-            }
-            return Inscrito.find({ documento: req.session.usuario }).exec((err, respuesta) => {
+        Inscrito.findOneAndDelete({ nombreCurso: cambia, documento: req.session.usuario },
+            (err, resultados) => {
                 if (err) {
-                    texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> ${err} </h4><hr></div>`
+                    return console.log(err);
                 }
-                if (respuesta.length == 0) {
-                    res.render('verMisCursos', {
-                        texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No se encuentra inscrito en ningún curso </h4><hr></div>`,
-                        nombre: req.session.nombre,
-                        rol: req.session.rol,
-                    });
-
-                } else {
-                    res.render('verMisCursos', {
-                        bandera: true,
-                        texto: `<div class = 'alert alert-success' role = 'alert'><h4 class="alert-heading"> <br> Inscripción eliminada con éxito </h4><hr></div>`,
-                        nombre: req.session.nombre,
-                        rol: req.session.rol,
-                        informacion: respuesta
-                    });
-                }
-            })
-        })
+                return Inscrito.find({ documento: req.session.usuario }).exec(
+                    (err, respuesta) => {
+                        if (err) {
+                            texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> ${err} </h4><hr></div>`;
+                        }
+                        if (respuesta.length == 0) {
+                            res.render("verMisCursos", {
+                                texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No se encuentra inscrito en ningún curso </h4><hr></div>`,
+                                nombre: req.session.nombre,
+                                rol: req.session.rol
+                            });
+                        } else {
+                            res.render("verMisCursos", {
+                                bandera: true,
+                                texto: `<div class = 'alert alert-success' role = 'alert'><h4 class="alert-heading"> <br> Inscripción eliminada con éxito </h4><hr></div>`,
+                                nombre: req.session.nombre,
+                                rol: req.session.rol,
+                                informacion: respuesta
+                            });
+                        }
+                    }
+                );
+            }
+        );
     } else {
         Inscrito.find({ documento: req.session.usuario }).exec((err, respuesta) => {
             if (err) {
-                texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> ${err} </h4><hr></div>`
+                texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> ${err} </h4><hr></div>`;
             }
             if (respuesta.length == 0) {
-                res.render('verMisCursos', {
+                res.render("verMisCursos", {
                     texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No se encuentra inscrito en ningún curso </h4><hr></div>`,
                     nombre: req.session.nombre,
-                    rol: req.session.rol,
+                    rol: req.session.rol
                 });
-
             } else {
-                res.render('verMisCursos', {
+                res.render("verMisCursos", {
                     bandera: true,
                     nombre: req.session.nombre,
                     rol: req.session.rol,
                     informacion: respuesta
                 });
             }
-        })
-
+        });
     }
 });
 
-app.post('/verInscritos', (req, res) => {
-
+app.post("/verInscritos", (req, res) => {
     cambia = req.body.gridRadios;
 
     if (!cambia) {
         Curso.find({}).exec((err, respuesta) => {
             if (err) {
-                texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`
+                texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`;
             }
             Inscrito.find({}).exec((err, respuesta2) => {
                 if (err) {
-                    texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`
+                    texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`;
                 }
-                res.render('verInscritos', {
+                res.render("verInscritos", {
                     listaCursos: respuesta,
                     listaInscritos: respuesta2,
                     nombre: req.session.nombre,
-                    rol: req.session.rol,
-                })
-
-            })
-        })
-
+                    rol: req.session.rol
+                });
+            });
+        });
     } else {
-        Curso.findOneAndUpdate({ nombre: cambia }, { estado: 'cerrado' }, { new: true, runValidators: true, context: 'query' }, (err, resultados) => {
-            if (err) {
-                console.log(err);
-            }
-            Aspirante.find({ rol: "docente" }, (err, respuesta) => {
+        Curso.findOneAndUpdate({ nombre: cambia }, { estado: "cerrado" }, { new: true, runValidators: true, context: "query" },
+            (err, resultados) => {
+                if (err) {
+                    console.log(err);
+                }
+                Aspirante.find({ rol: "docente" }, (err, respuesta) => {
                     if (err) {
                         console.log(err);
                     }
-                    res.render('asignarDocente', {
+                    res.render("asignarDocente", {
                         bandera: true,
                         nombre: req.session.nombre,
                         rol: req.session.rol,
                         Nombre_Curso: cambia,
-                        docentes: respuesta,
-                    })
-                })
+                        docentes: respuesta
+                    });
+                });
                 /*Curso.find({}).exec((err, respuesta) => {
-                    if (err) {
-                        texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`
-                    }
-                    Inscrito.find({}).exec((err, respuesta2) => {
-                        if (err) {
-                            texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`
-                        }
-                        res.render('verInscritos', {
-                            listaCursos: respuesta,
-                            listaInscritos: respuesta2,
-                            nombre: req.session.nombre,
-                            rol: req.session.rol,
-                        })
+                            if (err) {
+                                texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`
+                            }
+                            Inscrito.find({}).exec((err, respuesta2) => {
+                                if (err) {
+                                    texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`
+                                }
+                                res.render('verInscritos', {
+                                    listaCursos: respuesta,
+                                    listaInscritos: respuesta2,
+                                    nombre: req.session.nombre,
+                                    rol: req.session.rol,
+                                })
 
-                    })
-                })*/
-
-        })
-
-
+                            })
+                        })*/
+            }
+        );
     }
 });
 
-app.post('/docenteAsignado', (req, res) => {
+app.post("/docenteAsignado", (req, res) => {
     cursoModifica = req.body.nombreCurso;
     docenteAsigna = req.body.nombreDocente;
-    Curso.findOneAndUpdate({ nombre: cursoModifica }, { docente: docenteAsigna }, { new: true, runValidators: true, context: 'query' }, (err, resultados) => {
-        if (err) {
-            console.log(err);
-        }
-        res.render('asignarDocente', {
-            bandera: false,
-            nombre: req.session.nombre,
-            rol: req.session.rol,
-            mensaje: `<div class = 'alert alert-success' role = 'alert'><h4 class="alert-heading"> <br> Docente asignado </h4><hr></div>`,
-        })
-    })
-})
-
-app.post('/eliminarInscritos', (req, res) => {
-    Curso.find({ estado: 'disponible' }).exec((err, respuesta) => {
-        if (err) {
-            texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`
-        }
-        res.render('eliminarInscritos', {
-            listaCursos: respuesta,
-            nombre: req.session.nombre,
-            rol: req.session.rol,
-        })
-    })
-
-});
-
-app.post('/eliminado', (req, res) => {
-    idElimina = req.body.id;
-    cursoElimina = req.body.nombreCurso;
-    Inscrito.findOneAndDelete({ nombreCurso: cursoElimina, documento: idElimina }, (err, resultados) => {
-
-        if (err) {
-            return console.log(err)
-        }
-        if (!resultados) {
-            return res.render('eliminado', {
+    Curso.findOneAndUpdate({ nombre: cursoModifica }, { docente: docenteAsigna }, { new: true, runValidators: true, context: "query" },
+        (err, resultados) => {
+            if (err) {
+                console.log(err);
+            }
+            res.render("asignarDocente", {
                 bandera: false,
-                mensaje: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> Usuario no econtrado </h4><hr></div>`,
                 nombre: req.session.nombre,
                 rol: req.session.rol,
-            })
+                mensaje: `<div class = 'alert alert-success' role = 'alert'><h4 class="alert-heading"> <br> Docente asignado </h4><hr></div>`
+            });
         }
-        Inscrito.find({ nombreCurso: cursoElimina }).exec((err, respuesta) => {
-
-            if (err) {
-                return console.log(err)
-            }
-            if (respuesta.length == 0) {
-                res.render('eliminado', {
-                    bandera: false,
-                    mensaje: texto = `<div class = 'alert alert-success' role = 'alert'><h4 class="alert-heading"> <br> No quedan usuarios inscritos </h4><hr></div>`,
-                    nombre: req.session.nombre,
-                    rol: req.session.rol,
-                })
-            } else {
-                res.render('eliminado', {
-                    bandera: true,
-                    mensaje: texto = `<div class = 'alert alert-success' role = 'alert'><h4 class="alert-heading"> <br> El usuario fue eliminado con éxito </h4><hr></div>`,
-                    InscritosCursoInteres: respuesta,
-                    nombre: req.session.nombre,
-                    rol: req.session.rol,
-                })
-            }
-        })
-    })
-
+    );
 });
 
-app.post('/editarPerfiles', (req, res) => {
+app.post("/eliminarInscritos", (req, res) => {
+    Curso.find({ estado: "disponible" }).exec((err, respuesta) => {
+        if (err) {
+            texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`;
+        }
+        res.render("eliminarInscritos", {
+            listaCursos: respuesta,
+            nombre: req.session.nombre,
+            rol: req.session.rol
+        });
+    });
+});
+
+app.post("/eliminado", (req, res) => {
+    idElimina = req.body.id;
+    cursoElimina = req.body.nombreCurso;
+    Inscrito.findOneAndDelete({ nombreCurso: cursoElimina, documento: idElimina },
+        (err, resultados) => {
+            if (err) {
+                return console.log(err);
+            }
+            if (!resultados) {
+                return res.render("eliminado", {
+                    bandera: false,
+                    mensaje: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> Usuario no econtrado </h4><hr></div>`,
+                    nombre: req.session.nombre,
+                    rol: req.session.rol
+                });
+            }
+            Inscrito.find({ nombreCurso: cursoElimina }).exec((err, respuesta) => {
+                if (err) {
+                    return console.log(err);
+                }
+                if (respuesta.length == 0) {
+                    res.render("eliminado", {
+                        bandera: false,
+                        mensaje: (texto = `<div class = 'alert alert-success' role = 'alert'><h4 class="alert-heading"> <br> No quedan usuarios inscritos </h4><hr></div>`),
+                        nombre: req.session.nombre,
+                        rol: req.session.rol
+                    });
+                } else {
+                    res.render("eliminado", {
+                        bandera: true,
+                        mensaje: (texto = `<div class = 'alert alert-success' role = 'alert'><h4 class="alert-heading"> <br> El usuario fue eliminado con éxito </h4><hr></div>`),
+                        InscritosCursoInteres: respuesta,
+                        nombre: req.session.nombre,
+                        rol: req.session.rol
+                    });
+                }
+            });
+        }
+    );
+});
+
+app.post("/editarPerfiles", (req, res) => {
     id_verifica = req.body.id;
     console.log(id_verifica);
     if (!id_verifica) {
-        res.render('editarPerfiles', {
+        res.render("editarPerfiles", {
             nombre: req.session.nombre,
-            rol: req.session.rol,
-        })
+            rol: req.session.rol
+        });
     } else {
         Aspirante.findOne({ documento: id_verifica }, (err, respuesta) => {
             if (err) {
                 return console.log(err);
             }
             if (!respuesta) {
-                return res.render('editarPerfiles', {
+                return res.render("editarPerfiles", {
                     mensaje: `<div class = 'alert alert-success' role = 'alert'><h4 class="alert-heading"> <br> El usuario no se encuentra registrado </h4><hr></div>`,
                     nombre: req.session.nombre,
-                    rol: req.session.rol,
-                })
+                    rol: req.session.rol
+                });
             }
-            res.render('editarPerfiles', {
+            res.render("editarPerfiles", {
                 nombre: req.session.nombre,
                 rol: req.session.rol,
-                mensaje: '<h2> Información del usuario </h2>',
+                mensaje: "<h2> Información del usuario </h2>",
                 Formulario: `<div class="container px-5">
                     <form action="/editado" method="post">
                         <div class="form-row px-5 my-5 border border-dark">
                             <div class="form-group col-md-4 mt-5">
                                 Identificación del usuario:
-                                <input type="number" class="form-control" size="50" maxlength="50" value="${respuesta.documento}" name="id" required>
+                                <input type="number" class="form-control" size="50" maxlength="50" value="${
+                                  respuesta.documento
+                                }" name="id" required>
                             </div>
         
                             <div class="form-group col-md-4 mt-5">
                                 Nombre del Usuario:
-                                <input type="text" class="form-control" size="50" maxlength="50" value="${respuesta.nombre}" name="nombre" required>
+                                <input type="text" class="form-control" size="50" maxlength="50" value="${
+                                  respuesta.nombre
+                                }" name="nombre" required>
                             </div>
                             <div class="form-group col-md-4 mt-5">
                                 Email:
-                                <input type="text" class="form-control" size="50" maxlength="50" value="${respuesta.email}" name="email" required>
+                                <input type="text" class="form-control" size="50" maxlength="50" value="${
+                                  respuesta.email
+                                }" name="email" required>
                             </div>
                             <div class="form-group col-md-4 mt-5">
                                 Telefono:
-                                <input type="number" class="form-control" size="50" maxlength="50" value="${respuesta.telefono}" name="tel" required>
+                                <input type="number" class="form-control" size="50" maxlength="50" value="${
+                                  respuesta.telefono
+                                }" name="tel" required>
                             </div>
                             <div class="form-group col-md-6 mt-5">
                                 Seleccione el rol:
@@ -442,110 +441,104 @@ app.post('/editarPerfiles', (req, res) => {
                             
                     </form>
                 </div>`
-            })
-
-        })
+            });
+        });
     }
 });
 
-app.post('/editado', (req, res) => {
+app.post("/editado", (req, res) => {
     datos = {
         nombre: req.body.nombre,
         documento: req.body.id,
         email: req.body.email,
         tel: req.body.tel,
-        rol: req.body.perfil,
-    }
-    Aspirante.findOneAndUpdate({ documento: datos.documento }, datos, { new: true, runValidators: true, context: 'query' }, (err, resultados) => {
-        if (err) {
-            return console.log(err)
+        rol: req.body.perfil
+    };
+    Aspirante.findOneAndUpdate({ documento: datos.documento },
+        datos, { new: true, runValidators: true, context: "query" },
+        (err, resultados) => {
+            if (err) {
+                return console.log(err);
+            }
+
+            res.render("editado", {
+                mensaje: `<div class = 'alert alert-success' role = 'alert'><h4 class="alert-heading"> <br> El usuario se ha modificado </h4><hr></div>`,
+                infoUsuario: datos,
+                nombre: req.session.nombre,
+                rol: req.session.rol
+            });
         }
-
-        res.render('editado', {
-            mensaje: `<div class = 'alert alert-success' role = 'alert'><h4 class="alert-heading"> <br> El usuario se ha modificado </h4><hr></div>`,
-            infoUsuario: datos,
-            nombre: req.session.nombre,
-            rol: req.session.rol,
-        })
-    })
-
+    );
 });
 
-app.post('/verMisCursosDocente', (req, res) => {
+app.post("/verMisCursosDocente", (req, res) => {
     Curso.find({ docente: req.session.nombre }).exec((err, respuesta) => {
         if (err) {
-            texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`
+            texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`;
         }
         Inscrito.find({}).exec((err, respuesta2) => {
             if (err) {
-                texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`
+                texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`;
             }
-            res.render('verMisCursosDocente', {
+            res.render("verMisCursosDocente", {
                 listaCursos: respuesta,
                 listaInscritos: respuesta2,
                 nombre: req.session.nombre,
-                rol: req.session.rol,
-            })
-
-        })
-    })
+                rol: req.session.rol
+            });
+        });
+    });
 });
 
-
-
-app.post('/ingresar', (req, res) => {
+app.post("/ingresar", (req, res) => {
     Aspirante.findOne({ documento: req.body.documento }, (err, resultados) => {
         if (err) {
-            return console.log(err)
+            return console.log(err);
         }
         if (!resultados) {
-            return res.render('ingresar', {
+            return res.render("ingresar", {
                 mensaje: "Usuario no encontrado"
-            })
+            });
         }
 
         //Para crear las variables de sesión
-        req.session.usuario = resultados.documento
-        req.session.nombre = resultados.nombre
-        req.session.rol = resultados.rol
+        req.session.usuario = resultados.documento;
+        req.session.nombre = resultados.nombre;
+        req.session.rol = resultados.rol;
 
-        if (req.session.rol === 'admin') {
-            return res.render('ingresar', {
+        if (req.session.rol === "admin") {
+            return res.render("ingresar", {
                 mensaje: "Bienvenido " + resultados.nombre,
                 nombre: req.session.nombre,
                 rol: req.session.rol,
                 id: req.session.usuario,
                 sesion: true
-
-            })
-        } else if (req.session.rol === 'aspirante') {
-            return res.render('ingresar', {
+            });
+        } else if (req.session.rol === "aspirante") {
+            return res.render("ingresar", {
                 mensaje: "Bienvenido " + resultados.nombre,
                 nombre: req.session.nombre,
                 rol: req.session.rol,
                 id: req.session.usuario,
                 sesion2: true
-
-            })
-        } else if (req.session.rol === 'docente') {
-            return res.render('ingresar', {
+            });
+        } else if (req.session.rol === "docente") {
+            return res.render("ingresar", {
                 mensaje: "Bienvenido " + resultados.nombre,
                 nombre: req.session.nombre,
                 rol: req.session.rol,
                 id: req.session.usuario,
                 sesion3: true
-
-            })
-
+            });
         }
-    })
-})
+    });
+});
 
-app.get('/salir', (req, res) => {
-    req.session.destroy((err) => {
-        if (err) return console.log(err)
-    })
-    res.redirect('/')
-})
+app.get("/salir", (req, res) => {
+    req.session.destroy(err => {
+        if (err) return console.log(err);
+    });
+    res.redirect("/");
+});
 
-module.exports = app
+module.exports = app;
