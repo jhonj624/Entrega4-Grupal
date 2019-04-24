@@ -49,6 +49,10 @@ const cursoSchema = new Schema({
     docente: {
         type: String,
         trim: true, //Evitar errores con espacios agreagados sin querer
+    },
+
+    programa: {
+        type: Buffer,
     }
 
 

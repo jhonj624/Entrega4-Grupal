@@ -6,6 +6,7 @@ const Aspirante = require("./../models/aspirante");
 const Curso = require("./../models/curso");
 const Inscrito = require("./../models/inscrito");
 const bcrypt = require("bcrypt");
+const multer = require('multer')
 const session = require("express-session");
 //Enviar correo
 const sgMail = require('@sendgrid/mail');
@@ -95,14 +96,32 @@ app.post("/formularioCrear", (req, res) => {
     });
 });
 
-app.post("/crear", (req, res) => {
+var upload = multer({
+    // Validación del archivo del lado del cliente
+    limits: {
+        filesize: 1000000 // 1MB
+    },
+
+    fileFilter(req, file, cb) {
+        // Validación del formato de archivo del lado del servidor
+        if (!file.originalname.match(/\.(pdf)$/)) {
+            return cb(new Error('No es un archivo válido'))
+        }
+        // To accept the file pass `true`, like so:
+        cb(null, true)
+    }
+
+})
+
+app.post("/crear", upload.single('archivo'), (req, res) => {
     let curso = new Curso({
         nombre: req.body.nombre,
         id: req.body.id,
         valor: req.body.valor,
         descripcion: req.body.descripcion,
         modalidad: req.body.modalidad,
-        intensidad: req.body.intensidad
+        intensidad: req.body.intensidad,
+        programa: req.file.buffer
     });
 
     curso.save((err, result) => {
