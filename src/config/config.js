@@ -1,10 +1,7 @@
-process.env.PORT = process.env.PORT || 3000;
-
+process.env.PORT = process.env.PORT || 3002;
 
 if (!process.env.URLDB) {
-
-    process.env.URLDB = 'mongodb://localhost:27017/Education'
-
+    process.env.URLDB = "mongodb://localhost:27017/Education";
 }
 
-//Clave de API de sendGRID (Isa)
+process.env.SENDGRID_API_KEY = "";

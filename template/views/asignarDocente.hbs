@@ -11,11 +11,11 @@
 
 {{#if bandera}}
 <form action="/docenteAsignado" method="post">
-    
+
     <div class="form-row px-4">
         <div class="form-group col-md-6">
             Curso:
-            <input class="form-control" name="nombreCurso" value= "{{{Nombre_Curso}}}">
+            <input class="form-control" name="nombreCurso" value="{{{Nombre_Curso}}}">
             </input>
             Docente:
             <select class="form-control" name="nombreDocente" required>
@@ -24,6 +24,11 @@
         </div>
     </div>
     <div class="form-row px-4">
+        <p> Fecha de inicio del curso </p>
+        <input type="date" name="fechaInicio" required></input>
+    </div>
+    <div class="form-row px-4">
+        <br>
         <button class="btn btn-primary"> Realizar la asignación </button>
     </div>
 </form>

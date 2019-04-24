@@ -1,3 +1,4 @@
+require("../config/config");
 const express = require("express");
 const app = express();
 const path = require("path");
@@ -11,6 +12,10 @@ const session = require("express-session");
 //Enviar correo
 const sgMail = require('@sendgrid/mail');
 
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+// require para enviar correos
+const sgMail = require("@sendgrid/mail");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const dirViews = path.join(__dirname, "../../template/views");
@@ -352,22 +357,22 @@ app.post("/verInscritos", (req, res) => {
                     });
                 });
                 /*Curso.find({}).exec((err, respuesta) => {
-                            if (err) {
-                                texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`
-                            }
-                            Inscrito.find({}).exec((err, respuesta2) => {
-                                if (err) {
-                                    texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`
-                                }
-                                res.render('verInscritos', {
-                                    listaCursos: respuesta,
-                                    listaInscritos: respuesta2,
-                                    nombre: req.session.nombre,
-                                    rol: req.session.rol,
-                                })
+                                                                                                                                                    if (err) {
+                                                                                                                                                        texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`
+                                                                                                                                                    }
+                                                                                                                                                    Inscrito.find({}).exec((err, respuesta2) => {
+                                                                                                                                                        if (err) {
+                                                                                                                                                            texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`
+                                                                                                                                                        }
+                                                                                                                                                        res.render('verInscritos', {
+                                                                                                                                                            listaCursos: respuesta,
+                                                                                                                                                            listaInscritos: respuesta2,
+                                                                                                                                                            nombre: req.session.nombre,
+                                                                                                                                                            rol: req.session.rol,
+                                                                                                                                                        })
 
-                            })
-                        })*/
+                                                                                                                                                    })
+                                                                                                                                                })*/
             }
         );
     }
@@ -376,11 +381,33 @@ app.post("/verInscritos", (req, res) => {
 app.post("/docenteAsignado", (req, res) => {
     cursoModifica = req.body.nombreCurso;
     docenteAsigna = req.body.nombreDocente;
-    Curso.findOneAndUpdate({ nombre: cursoModifica }, { docente: docenteAsigna }, { new: true, runValidators: true, context: "query" },
+    fechaInicio = req.body.fechaInicio;
+
+    Curso.findOneAndUpdate({ nombre: cursoModifica }, { docente: docenteAsigna, fechaInicio: fechaInicio }, { new: true, runValidators: true, context: "query" },
         (err, resultados) => {
             if (err) {
                 console.log(err);
             }
+            // busco el correo del docente
+            Aspirante.findOne({ nombre: docenteAsigna, rol: "docente" },
+                (err, docente) => {
+                    if (err) {
+                        console.log("No hay docente asociado");
+                    }
+                    correo = docente.email;
+                    console.log(correo);
+                    // envio el correo al docente
+                    // Estructura para envio de mensaje electronico
+                    const msg = {
+                        to: correo,
+                        from: "jhonvelasquezudea@gmail.com",
+                        subject: "Asignación de curso",
+                        text: `Estimado(a) ${docenteAsigna},
+                        Su curso ${cursoModifica} ha sido cerrado y comienza el día ${fechaInicio}`
+                    };
+                    sgMail.send(msg); // Se envia el mensaje al mail
+                }
+            );
             res.render("asignarDocente", {
                 bandera: false,
                 nombre: req.session.nombre,
