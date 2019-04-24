@@ -7,9 +7,15 @@ const Curso = require("./../models/curso");
 const Inscrito = require("./../models/inscrito");
 const bcrypt = require("bcrypt");
 const session = require("express-session");
+//Enviar correo
+const sgMail = require('@sendgrid/mail');
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const dirViews = path.join(__dirname, "../../template/views");
 const dirPartials = path.join(__dirname, "../../template/partials");
+
+
 
 require("./../helpers/helpers");
 
@@ -51,6 +57,22 @@ app.post("/registrar", (req, res) => {
                 rol: req.session.rol
             });
         }
+        const msg = {
+            to: req.body.email,
+            from: 'isamuor90@gmail.com',
+            subject: 'Bienvenido a plataforma virtual',
+            text: 'Bienvenido',
+            html: `<h1><strong>Bienvenido a la plataforma de cursos virtuales</strong></h1> <br><br> 
+                            <h2>Ahora puede inscribirse en los cursos disponibles</h2><br><br>
+                            <h3>Datos de registro</h3>
+                            <ul>
+                            <li type="circle">Nombre: ${req.body.nombre} </li>
+                            <li type="circle">Identificación: ${ req.body.id} </li>
+                            <li type="circle">Email: ${req.body.email} </li*/>
+                            <li type="circle">Telefono: ${req.body.tel} </li>
+                            </ul>`
+        };
+        sgMail.send(msg);
         res.render("registropost", {
             mensaje: `<div class = 'alert-success'\
             role = 'alert'> <h4 class="alert-heading"> <br> Registro realizado con éxito </h4><hr></div>`,
