@@ -189,6 +189,8 @@ app.post("/inscritos", (req, res) => {
         Inscrito.find({ documento: usuario.documento, nombreCurso: req.body.nombreCurso },
             (err, resultados) => {
                 if (resultados.length == 0) {
+
+
                     inscrito = new Inscrito({
                         nombre: usuario.nombre,
                         documento: usuario.documento,
@@ -200,6 +202,32 @@ app.post("/inscritos", (req, res) => {
                         if (err) {
                             return console.log(err);
                         }
+                        Curso.findOne({ nombre: req.body.nombreCurso }, (err, cursito) => {
+                            const msg = {
+                                to: usuario.email,
+                                from: 'isamuor90@gmail.com',
+                                subject: `Bienvenido al curso: ${cursito.nombre}`,
+                                text: 'Bienvenido',
+                                html: `<h1><strong>Usted se ha inscrito de manera exitosa al curso  ${req.body.nombreCurso} </strong></h1> <br><br> 
+                                            
+                                            <h3>Información del Curso</h3>
+                                            <ul>
+                                            <li type="circle">Nombre:${cursito.nombre} </li>
+                                            <li type="circle">Valor: ${cursito.valor} </li>
+                                            <li type="circle">Descripción: ${cursito.descripcion} </li*/>
+                                            </ul>`,
+                                attachments: [{
+                                    content: cursito.programa.toString('base64'),
+                                    filename: 'programa.pdf',
+                                    //type: 'plain/text',
+                                    disposition: 'attachment',
+                                    //content_id: 'mytext'
+                                }, ],
+
+                            };
+                            sgMail.send(msg);
+                        })
+
                         res.render("inscritos", {
                             bandera: true,
                             texto: `<div class = 'alert-success px-4'

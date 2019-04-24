@@ -8,4 +8,3 @@ if (!process.env.URLDB) {
 }
 
 //Clave de API de sendGRID (Isa)
-process.env.SENDGRID_API_KEY = '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'
