@@ -33,6 +33,7 @@ app.get('/', (req, res) => res.render('index', { nombre: req.session.nombre }));
 app.get('/registro', (req, res) => res.render('registro', { nombre: req.session.nombre, rol: req.session.rol, }));
 
 app.post('/registrar', (req, res) => {
+    console.log(req.body)
     let aspirante = new Aspirante({
         nombre: req.body.nombre,
         documento: req.body.id,
