@@ -7,12 +7,8 @@ const Aspirante = require("./../models/aspirante");
 const Curso = require("./../models/curso");
 const Inscrito = require("./../models/inscrito");
 const bcrypt = require("bcrypt");
-const multer = require('multer')
+const multer = require("multer");
 const session = require("express-session");
-//Enviar correo
-const sgMail = require('@sendgrid/mail');
-
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // require para enviar correos
 const sgMail = require("@sendgrid/mail");
@@ -20,8 +16,6 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const dirViews = path.join(__dirname, "../../template/views");
 const dirPartials = path.join(__dirname, "../../template/partials");
-
-
 
 require("./../helpers/helpers");
 
@@ -65,15 +59,17 @@ app.post("/registrar", (req, res) => {
         }
         const msg = {
             to: req.body.email,
-            from: 'isamuor90@gmail.com',
-            subject: 'Bienvenido a plataforma virtual',
-            text: 'Bienvenido',
+            from: "isamuor90@gmail.com",
+            subject: "Bienvenido a plataforma virtual",
+            text: "Bienvenido",
             html: `<h1><strong>Bienvenido a la plataforma de cursos virtuales</strong></h1> <br><br> 
                             <h2>Ahora puede inscribirse en los cursos disponibles</h2><br><br>
                             <h3>Datos de registro</h3>
                             <ul>
                             <li type="circle">Nombre: ${req.body.nombre} </li>
-                            <li type="circle">Identificación: ${ req.body.id} </li>
+                            <li type="circle">Identificación: ${
+                              req.body.id
+                            } </li>
                             <li type="circle">Email: ${req.body.email} </li*/>
                             <li type="circle">Telefono: ${req.body.tel} </li>
                             </ul>`
@@ -110,15 +106,14 @@ var upload = multer({
     fileFilter(req, file, cb) {
         // Validación del formato de archivo del lado del servidor
         if (!file.originalname.match(/\.(pdf)$/)) {
-            return cb(new Error('No es un archivo válido'))
+            return cb(new Error("No es un archivo válido"));
         }
         // To accept the file pass `true`, like so:
-        cb(null, true)
+        cb(null, true);
     }
+});
 
-})
-
-app.post("/crear", upload.single('archivo'), (req, res) => {
+app.post("/crear", upload.single("archivo"), (req, res) => {
     let curso = new Curso({
         nombre: req.body.nombre,
         id: req.body.id,
@@ -328,23 +323,22 @@ app.post("/verInscritos", (req, res) => {
                         docentes: respuesta
                     });
                 });
-                /*Curso.find({}).exec((err, respuesta) => {
-                                                                                                                                                    if (err) {
-                                                                                                                                                        texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`
-                                                                                                                                                    }
-                                                                                                                                                    Inscrito.find({}).exec((err, respuesta2) => {
-                                                                                                                                                        if (err) {
-                                                                                                                                                            texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`
-                                                                                                                                                        }
-                                                                                                                                                        res.render('verInscritos', {
-                                                                                                                                                            listaCursos: respuesta,
-                                                                                                                                                            listaInscritos: respuesta2,
-                                                                                                                                                            nombre: req.session.nombre,
-                                                                                                                                                            rol: req.session.rol,
-                                                                                                                                                        })
-
-                                                                                                                                                    })
-                                                                                                                                                })*/
+                /*   Curso.find({}).exec((err, respuesta) => {
+                                    if (err) {
+                                        texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`;
+                                    }
+                                    Inscrito.find({}).exec((err, respuesta2) => {
+                                        if (err) {
+                                            texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`;
+                                        }
+                                        res.render("verInscritos", {
+                                            listaCursos: respuesta,
+                                            listaInscritos: respuesta2,
+                                            nombre: req.session.nombre,
+                                            rol: req.session.rol
+                                        });
+                                    });
+                                }); */
             }
         );
     }
