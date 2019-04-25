@@ -1,8 +1,16 @@
+//=======================
+//    PUERTO
+//=======================
 process.env.PORT = process.env.PORT || 3000;
 
-// Entorno
+//=======================
+//    ENTORNO
+//=======================
 process.env.NODE_ENV = process.env.NODE_ENV || "dev"; // bien
 
+//=======================
+//    BASE DE DATOS
+//=======================
 let urlDB;
 if (process.env.NODE_ENV === "dev") {
     urlDB = "mongodb://localhost:27017/Education";
@@ -12,7 +20,18 @@ if (process.env.NODE_ENV === "dev") {
 
 process.env.URLDB = urlDB;
 console.log(urlDB);
-/* process.env.SENDGRID_API_KEY =
-    "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"; */
-process.env.SENDGRID_API_KEY = process.env.SG_KEY;
+
+//=======================
+//    SENDGRID_API_KEY
+//=======================
+let sg_key;
+
+if (process.env.NODE_ENV === "dev") {
+    require("./sg_key");
+    sg_key = process.env.SG_KEY;
+} else {
+    sg_key = process.env.SG_KEY;
+}
+process.env.SENDGRID_API_KEY = sg_key;
+
 console.log("sendgrid key:" + process.env.SENDGRID_API_KEY);

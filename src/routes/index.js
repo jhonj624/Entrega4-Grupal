@@ -324,54 +324,74 @@ app.post("/verInscritos", (req, res) => {
                     });
                 });
                 /*   Curso.find({}).exec((err, respuesta) => {
-                                    if (err) {
-                                        texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`;
-                                    }
-                                    Inscrito.find({}).exec((err, respuesta2) => {
-                                        if (err) {
-                                            texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`;
-                                        }
-                                        res.render("verInscritos", {
-                                            listaCursos: respuesta,
-                                            listaInscritos: respuesta2,
-                                            nombre: req.session.nombre,
-                                            rol: req.session.rol
-                                        });
-                                    });
-                                }); */
+                                                                                                                                            if (err) {
+                                                                                                                                                texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`;
+                                                                                                                                            }
+                                                                                                                                            Inscrito.find({}).exec((err, respuesta2) => {
+                                                                                                                                                if (err) {
+                                                                                                                                                    texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`;
+                                                                                                                                                }
+                                                                                                                                                res.render("verInscritos", {
+                                                                                                                                                    listaCursos: respuesta,
+                                                                                                                                                    listaInscritos: respuesta2,
+                                                                                                                                                    nombre: req.session.nombre,
+                                                                                                                                                    rol: req.session.rol
+                                                                                                                                                });
+                                                                                                                                            });
+                                                                                                                                        }); */
             }
         );
     }
 });
 
 app.post("/docenteAsignado", (req, res) => {
-    cursoModifica = req.body.nombreCurso;
-    docenteAsigna = req.body.nombreDocente;
+    cursoAsignado = req.body.nombreCurso;
+    docenteAsignado = req.body.nombreDocente;
     fechaInicio = req.body.fechaInicio;
+    let numInscritos;
 
-    Curso.findOneAndUpdate({ nombre: cursoModifica }, { docente: docenteAsigna, fechaInicio: fechaInicio }, { new: true, runValidators: true, context: "query" },
+    Curso.findOneAndUpdate({ nombre: cursoAsignado }, { docente: docenteAsignado, fechaInicio: fechaInicio }, { new: true, runValidators: true, context: "query" },
         (err, resultados) => {
             if (err) {
                 console.log(err);
             }
             // busco el correo del docente
-            Aspirante.findOne({ nombre: docenteAsigna, rol: "docente" },
+            Aspirante.findOne({ nombre: docenteAsignado, rol: "docente" },
                 (err, docente) => {
                     if (err) {
                         console.log("No hay docente asociado");
                     }
-                    correo = docente.email;
-                    console.log(correo);
-                    // envio el correo al docente
-                    // Estructura para envio de mensaje electronico
-                    const msg = {
-                        to: correo,
-                        from: "jhonvelasquezudea@gmail.com",
-                        subject: "Asignación de curso",
-                        text: `Estimado(a) ${docenteAsigna},
-                        Su curso ${cursoModifica} ha sido cerrado y comienza el día ${fechaInicio}`
-                    };
-                    sgMail.send(msg); // Se envia el mensaje al mail
+                    // busco la cantidad de inscritos en el curso
+                    Inscrito.find({ nombreCurso: cursoAsignado }).exec(
+                        (err, res_inscritos) => {
+                            if (err) {
+                                console.log("Error en la busqueda");
+                            }
+                            numInscritos = res_inscritos.length;
+                            console.log("Número de estudiantes inscritos:" + numInscritos);
+                            correo = docente.email;
+                            console.log(correo);
+                            // envio el correo al docente
+                            // Estructura para envio de mensaje electronico
+                            const msg = {
+                                to: correo,
+                                from: "jhonvelasquezudea@gmail.com",
+                                subject: "Asignación de curso",
+                                text: "",
+                                html: `<h1><strong> Enhora buena, Profesor(a) ${docenteAsignado} </strong></h1>
+                                 <br><br>
+                                <h2><strong>Se le ha programado un curso</strong></h2>
+                            <br><br>
+                            <h3>Datos del curso</h3>
+                            <ul>
+                            <li type="circle">Curso: ${cursoAsignado} </li>
+                            <li type="circle">Fecha de Inicio: ${fechaInicio} </li>
+                            <li type="circle">Número de estudiantes: ${numInscritos} </li*/>
+                            </ul>`
+                            };
+                            sgMail.send(msg); // Se envia el mensaje al mail
+                        }
+                    );
                 }
             );
             res.render("asignarDocente", {
