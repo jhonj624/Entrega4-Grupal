@@ -189,8 +189,6 @@ app.post("/inscritos", (req, res) => {
         Inscrito.find({ documento: usuario.documento, nombreCurso: req.body.nombreCurso },
             (err, resultados) => {
                 if (resultados.length == 0) {
-
-
                     inscrito = new Inscrito({
                         nombre: usuario.nombre,
                         documento: usuario.documento,
@@ -205,28 +203,35 @@ app.post("/inscritos", (req, res) => {
                         Curso.findOne({ nombre: req.body.nombreCurso }, (err, cursito) => {
                             const msg = {
                                 to: usuario.email,
-                                from: 'isamuor90@gmail.com',
+                                from: "isamuor90@gmail.com",
                                 subject: `Bienvenido al curso: ${cursito.nombre}`,
-                                text: 'Bienvenido',
-                                html: `<h1><strong>Usted se ha inscrito de manera exitosa al curso  ${req.body.nombreCurso} </strong></h1> <br><br> 
+                                text: "Bienvenido",
+                                html: `<h1><strong>Usted se ha inscrito de manera exitosa al curso  ${
+                  req.body.nombreCurso
+                } </strong></h1> <br><br> 
                                             
                                             <h3>Información del Curso</h3>
                                             <ul>
-                                            <li type="circle">Nombre:${cursito.nombre} </li>
-                                            <li type="circle">Valor: ${cursito.valor} </li>
-                                            <li type="circle">Descripción: ${cursito.descripcion} </li*/>
+                                            <li type="circle">Nombre:${
+                                              cursito.nombre
+                                            } </li>
+                                            <li type="circle">Valor: ${
+                                              cursito.valor
+                                            } </li>
+                                            <li type="circle">Descripción: ${
+                                              cursito.descripcion
+                                            } </li*/>
                                             </ul>`,
                                 attachments: [{
-                                    content: cursito.programa.toString('base64'),
-                                    filename: 'programa.pdf',
+                                    content: cursito.programa.toString("base64"),
+                                    filename: "programa.pdf",
                                     //type: 'plain/text',
-                                    disposition: 'attachment',
-                                    //content_id: 'mytext'
-                                }, ],
-
+                                    disposition: "attachment"
+                                        //content_id: 'mytext'
+                                }]
                             };
                             sgMail.send(msg);
-                        })
+                        });
 
                         res.render("inscritos", {
                             bandera: true,
@@ -352,21 +357,21 @@ app.post("/verInscritos", (req, res) => {
                     });
                 });
                 /*   Curso.find({}).exec((err, respuesta) => {
-                                                                                                                                            if (err) {
-                                                                                                                                                texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`;
-                                                                                                                                            }
-                                                                                                                                            Inscrito.find({}).exec((err, respuesta2) => {
-                                                                                                                                                if (err) {
-                                                                                                                                                    texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`;
-                                                                                                                                                }
-                                                                                                                                                res.render("verInscritos", {
-                                                                                                                                                    listaCursos: respuesta,
-                                                                                                                                                    listaInscritos: respuesta2,
-                                                                                                                                                    nombre: req.session.nombre,
-                                                                                                                                                    rol: req.session.rol
-                                                                                                                                                });
-                                                                                                                                            });
-                                                                                                                                        }); */
+                                                                                                                                                                                                                                                                    if (err) {
+                                                                                                                                                                                                                                                                        texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`;
+                                                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                                                    Inscrito.find({}).exec((err, respuesta2) => {
+                                                                                                                                                                                                                                                                        if (err) {
+                                                                                                                                                                                                                                                                            texto: `<div class = 'alert alert-danger' role = 'alert'><h4 class="alert-heading"> <br> No hay cursos creados </h4><hr></div>`;
+                                                                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                                                                        res.render("verInscritos", {
+                                                                                                                                                                                                                                                                            listaCursos: respuesta,
+                                                                                                                                                                                                                                                                            listaInscritos: respuesta2,
+                                                                                                                                                                                                                                                                            nombre: req.session.nombre,
+                                                                                                                                                                                                                                                                            rol: req.session.rol
+                                                                                                                                                                                                                                                                        });
+                                                                                                                                                                                                                                                                    });
+                                                                                                                                                                                                                                                                }); */
             }
         );
     }
@@ -650,5 +655,18 @@ app.get("/salir", (req, res) => {
     });
     res.redirect("/");
 });
+
+//=====================================
+//    GET METHOD - CHAT
+//=====================================
+app.get("/chat", (req, res) => {
+    var aspirante = req.session.nombre;
+    console.log("Nombre aspirante: " + aspirante);
+    res.render("chat", {});
+});
+
+/* app.get("/chat", (req, res) => {
+    res.render("chat");
+}); */
 
 module.exports = app;

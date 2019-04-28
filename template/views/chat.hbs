@@ -1,0 +1,22 @@
+{{>header}}
+
+<h1>Sala de chat</h1>
+<form id="formulario">
+  <label>Chat público</label>
+  <input type="text" id="texto" />
+  <button>Enviar</button>
+</form>
+<div id="chat"></div>
+
+<form id="formularioPrivado">
+  <label>Chat privado</label>
+  <input type="text" id="destinatario" placeholder="Destinatario" />
+  <input type="text" id="textoPrivado" />
+  <button>Enviar Privado</button>
+</form>
+<div id="chatPrivado"></div>
+
+<script src="socket.io/socket.io.js"></script>
+<script src="js/socket.js"></script>
+
+{{>footer}}

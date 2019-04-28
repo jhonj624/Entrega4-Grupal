@@ -25,8 +25,8 @@
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#">Menu</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
-            aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -40,6 +40,7 @@
                     </form>
                 </li>
                 {{#if sesion}}
+                <!-- Sesión rol admin/-->
                 <li class="nav-item">
                     <form action="/formularioCrear" method="post" class="form-inline">
                         <a class="nav-link" href="javascript:;" onclick="parentNode.submit();">Ver y crear cursos</a>
@@ -52,14 +53,15 @@
                 </li>
                 <li class="nav-item">
                     <form action="/EliminarInscritos" method="post" class="form-inline">
-                        <a class="nav-link" href="javascript:;" onclick="parentNode.submit();"> Eliminar inscripción </a>
+                        <a class="nav-link" href="javascript:;" onclick="parentNode.submit();"> Eliminar inscripción
+                        </a>
                     </form>
                 </li>
                 <li class="nav-item">
-                <form action="/editarPerfiles" method="post" class="form-inline">
-                    <a class="nav-link" href="javascript:;" onclick="parentNode.submit();"> Editar perfiles </a>
-                </form>
-            </li>
+                    <form action="/editarPerfiles" method="post" class="form-inline">
+                        <a class="nav-link" href="javascript:;" onclick="parentNode.submit();"> Editar perfiles </a>
+                    </form>
+                </li>
 
             </ul>
             <form class="form-inline my-2 my-lg-0" action="/salir" method="get">
@@ -67,7 +69,8 @@
                 <p>{{rol}}</p>
                 <button class="btn btn-outline-danger mx-5 my-0" type="submit">Salir</button>
             </form>
-                {{else}} {{#if sesion2}}
+            {{else}} {{#if sesion2}}
+            <!-- Sesión rol aspirante/-->
             <li class="nav-item">
                 <form action="/ver" method="post" class="form-inline">
                     <a class="nav-link" href="javascript:;" onclick="parentNode.submit();"> Cursos </a>
@@ -83,13 +86,20 @@
                     <a class="nav-link" href="javascript:;" onclick="parentNode.submit();"> Mis cursos </a>
                 </form>
             </li>
+            <li class="nav-item">
+                <form action="/chat" method="get" class="form-inline">
+                    <input type="hidden" value="{{nombre}}" name="nombre">
+                    <a class="nav-link" href="javascript:;" onclick="parentNode.submit();"> Chat </a>
+                </form>
+            </li>
             </ul>
-            <form class="form-inline my-2 my-lg-0" action="/salir" method="get">
-                <h4>{{nombre}}</h4>
+            <form id="nombreAspirante" class="form-inline my-2 my-lg-0" action="/salir" method="get">
+                <h4 id="nombre">{{nombre}}</h4>
                 <p>{{rol}}</p>
-                <button class="btn btn-outline-danger mx-5 my-0"  type="submit">Salir</button>
+                <button class="btn btn-outline-danger mx-5 my-0" type="submit">Salir</button>
             </form>
             {{else}} {{#if sesion3}}
+            <!-- Sesión rol docente/-->
             <li class="nav-item">
                 <form action="/verMisCursosDocente" method="post" class="form-inline">
                     <a class="nav-link" href="javascript:;" onclick="parentNode.submit();"> Mis cursos </a>
@@ -99,7 +109,7 @@
             <form class="form-inline my-2 my-lg-0" action="/salir" method="get">
                 <h4>{{nombre}}</h4>
                 <p>{{rol}}</p>
-                <button class="btn btn-outline-danger mx-5 my-0"  type="submit">Salir</button>
+                <button class="btn btn-outline-danger mx-5 my-0" type="submit">Salir</button>
             </form>
             {{else}}
             </ul>
@@ -109,6 +119,6 @@
                 <button class="btn btn-primary my-2 my-sm-0" type="submit">Ingresar</button>
             </form>
             {{/if}} {{/if}}{{/if}}
-            
+
         </div>
     </nav>
